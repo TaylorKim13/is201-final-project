@@ -10944,8 +10944,8 @@ header.masthead .container {
 .masthead-bg {
   position: absolute;
   inset: 0;
-  background-size: cover, 50% 100%, 50% 100%;
-  background-position: center, left center, right center;
+  background-size: cover, 50% auto, 50% auto;
+  background-position: center, left top, right top;
   background-repeat: no-repeat;
   transition: opacity 1s ease;
   opacity: 0;
@@ -10959,8 +10959,8 @@ header.masthead h1, header.masthead .h1 {
 }
 @media (min-width: 992px) {
   header.masthead {
-    height: 100vh;
-    min-height: 40rem;
+    height: 120vh;
+    min-height: 56rem;
     padding-top: 4.5rem;
     padding-bottom: 0;
   }

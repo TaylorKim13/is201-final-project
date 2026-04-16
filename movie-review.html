@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Review App</title>
+    <style>
+        :root {
+            --bg: #f4f7fb;
+            --card: #ffffff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --accent: #f97316;
+            --border: #e5e7eb;
+            --shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+            color: var(--text);
+            background: linear-gradient(180deg, #d9e5ff 0%, var(--bg) 35%);
+        }
+
+        .page {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1rem 3rem;
+        }
+
+        .top-nav {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 1rem;
+        }
+
+        .top-nav a {
+            text-decoration: none;
+            color: var(--text);
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 0.4rem 0.75rem;
+            font-weight: 600;
+            box-shadow: var(--shadow);
+        }
+
+        .hero-card,
+        .form-card,
+        .reviews-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+        }
+
+        .hero-card {
+            padding: 1.2rem 1.2rem 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero-card h1 {
+            margin: 0 0 0.35rem;
+            font-size: 2rem;
+        }
+
+        .hero-card p {
+            margin: 0;
+            color: var(--muted);
+        }
+
+        .form-card {
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .field-wide {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.65rem 0.7rem;
+            font: inherit;
+            background: #fff;
+        }
+
+        textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .stars {
+            display: inline-flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            gap: 0.2rem;
+        }
+
+        .stars input {
+            display: none;
+        }
+
+        .stars label {
+            cursor: pointer;
+            font-size: 1.7rem;
+            color: #d1d5db;
+            line-height: 1;
+        }
+
+        .stars label::before {
+            content: "★";
+        }
+
+        .stars label:hover,
+        .stars label:hover ~ label,
+        .stars input:checked ~ label {
+            color: #f59e0b;
+        }
+
+        .actions {
+            margin-top: 0.8rem;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 999px;
+            background: var(--accent);
+            color: #fff;
+            padding: 0.58rem 1rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .reviews-card {
+            padding: 1rem;
+        }
+
+        .reviews-card h2 {
+            margin: 0 0 0.75rem;
+        }
+
+        .empty {
+            margin: 0;
+            color: var(--muted);
+        }
+
+        .review-list {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .review-item {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.8rem;
+            background: #fff;
+        }
+
+        .review-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.5rem;
+            align-items: baseline;
+            margin-bottom: 0.35rem;
+        }
+
+        .review-title {
+            margin: 0;
+            font-size: 1.02rem;
+        }
+
+        .review-meta {
+            margin: 0;
+            font-size: 0.88rem;
+            color: var(--muted);
+        }
+
+        .review-stars {
+            color: #f59e0b;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .review-text {
+            margin: 0.4rem 0 0;
+        }
+
+        @media (max-width: 700px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <nav class="top-nav" aria-label="Navigation">
+            <a href="index.html">Back to Home</a>
+        </nav>
+
+        <section class="hero-card">
+            <h1>Movie Review App</h1>
+            <p>Leave a review, choose a 1-5 star rating, and see all reviews listed instantly.</p>
+        </section>
+
+        <section class="form-card">
+            <form id="reviewForm">
+                <div class="grid">
+                    <div class="field">
+                        <label for="movieTitle">Movie Title</label>
+                        <input id="movieTitle" name="movieTitle" type="text" required placeholder="Interstellar">
+                    </div>
+
+                    <div class="field">
+                        <label for="reviewerName">Your Name</label>
+                        <input id="reviewerName" name="reviewerName" type="text" required placeholder="Taylor Kim">
+                    </div>
+
+                    <div class="field field-wide">
+                        <label>Star Rating</label>
+                        <div class="stars" aria-label="Choose a star rating">
+                            <input type="radio" id="star5" name="rating" value="5" required>
+                            <label for="star5" title="5 stars"></label>
+                            <input type="radio" id="star4" name="rating" value="4">
+                            <label for="star4" title="4 stars"></label>
+                            <input type="radio" id="star3" name="rating" value="3">
+                            <label for="star3" title="3 stars"></label>
+                            <input type="radio" id="star2" name="rating" value="2">
+                            <label for="star2" title="2 stars"></label>
+                            <input type="radio" id="star1" name="rating" value="1">
+                            <label for="star1" title="1 star"></label>
+                        </div>
+                    </div>
+
+                    <div class="field field-wide">
+                        <label for="reviewText">Review</label>
+                        <textarea id="reviewText" name="reviewText" required placeholder="What did you think about the movie?"></textarea>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button class="btn" type="submit">Post Review</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="reviews-card">
+            <h2>Recent Reviews</h2>
+            <p id="emptyState" class="empty">No reviews yet. Be the first to post one.</p>
+            <div id="reviewList" class="review-list" aria-live="polite"></div>
+        </section>
+    </div>
+
+    <script>
+        const form = document.getElementById("reviewForm");
+        const reviewList = document.getElementById("reviewList");
+        const emptyState = document.getElementById("emptyState");
+
+        const starsForValue = (value) => "★".repeat(value) + "☆".repeat(5 - value);
+
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+
+            const movieTitle = form.movieTitle.value.trim();
+            const reviewerName = form.reviewerName.value.trim();
+            const reviewText = form.reviewText.value.trim();
+            const rating = Number(form.rating.value);
+
+            if (!movieTitle || !reviewerName || !reviewText || !rating) {
+                return;
+            }
+
+            const card = document.createElement("article");
+            card.className = "review-item";
+
+            const createdAt = new Date().toLocaleString();
+            card.innerHTML = `
+                <div class="review-head">
+                    <h3 class="review-title">${movieTitle}</h3>
+                    <span class="review-stars" aria-label="${rating} out of 5 stars">${starsForValue(rating)} (${rating}/5)</span>
+                </div>
+                <p class="review-meta">Reviewed by ${reviewerName} • ${createdAt}</p>
+                <p class="review-text">${reviewText}</p>
+            `;
+
+            reviewList.prepend(card);
+            emptyState.style.display = "none";
+            form.reset();
+        });
+    </script>
+</body>
+</html>

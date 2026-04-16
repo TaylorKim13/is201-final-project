@@ -59,10 +59,8 @@ window.addEventListener('DOMContentLoaded', event => {
     // Masthead background slideshow
     const leftImages = [
         'https://m.media-amazon.com/images/I/81kz06oSUeL.jpg',
-        'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/1592cb7c-9b89-4b7c-9cd7-61c44913dd58/d9bjt5a-88f0bd9e-c3d5-49a6-babe-d03c263fc2e5.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiIvZi8xNTkyY2I3Yy05Yjg5LTRiN2MtOWNkNy02MWM0NDkxM2RkNTgvZDlianQ1YS04OGYwYmQ5ZS1jM2Q1LTQ5YTYtYmFiZS1kMDNjMjYzZmMyZTUuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.s3SAsOyLUccU326baP3VS8jvStjrN5B3TRudwigKy9c',
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqrYwap1XaZplAXl08fLFjvOovWW_E4xMxNg&s',
         'https://static0.colliderimages.com/wordpress/wp-content/uploads/2019/10/star-wars-the-force-awakens-poster-405x600.jpg?q=50&fit=crop&w=405&dpr=1.5',
-        'https://m.media-amazon.com/images/I/71zR7dYIjzL._AC_UF894,1000_QL80_.jpg'
+        'https://image.tmdb.org/t/p/original/yihdXomYb5kTeSivtFndMy5iDmf.jpg'
     ];
 
     const rightImages = [

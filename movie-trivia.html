@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Trivia Game</title>
+    <style>
+        :root {
+            --primary: #f4623a;
+            --primary-hover: #f24516;
+            --ink: #212529;
+            --muted: #6c757d;
+            --line: #dee2e6;
+            --ok: #198754;
+            --bad: #dc3545;
+            --card: #ffffff;
+            --bg: #f8f9fa;
+            --shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Merriweather Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: var(--ink);
+            min-height: 100vh;
+            background: linear-gradient(to bottom, rgba(92, 77, 66, 0.78), rgba(92, 77, 66, 0.78)), url("assets/img/bg-masthead.jpg");
+            background-size: cover;
+            background-position: center;
+            padding: 1rem;
+            display: grid;
+            place-items: center;
+        }
+
+        .game-shell {
+            width: min(980px, 100%);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            background: var(--card);
+        }
+
+        .topbar {
+            background: #ffffff;
+            border-bottom: 1px solid var(--line);
+            padding: 0.95rem 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .topbar h1 {
+            margin: 0;
+            font-size: clamp(1.04rem, 2.3vw, 1.35rem);
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .home-link {
+            text-decoration: none;
+            color: #ffffff;
+            background: var(--primary);
+            border-radius: 999px;
+            padding: 0.4rem 0.8rem;
+            font-weight: 700;
+            font-size: 0.84rem;
+            transition: background 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .home-link:hover {
+            background: var(--primary-hover);
+        }
+
+        .content {
+            padding: 1rem;
+            background: var(--bg);
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.65rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .pill-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .pill {
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 0.2rem 0.63rem;
+            background: #ffffff;
+            color: var(--muted);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .timer {
+            color: var(--ink);
+            font-weight: 800;
+        }
+
+        .progress-wrap {
+            margin-bottom: 0.9rem;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 10px;
+            border-radius: 999px;
+            background: #e9ecef;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 0;
+            height: 100%;
+            background: var(--primary);
+            transition: width 250ms ease;
+        }
+
+        .question-card,
+        .result,
+        .leaderboard-card {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: #ffffff;
+            box-shadow: 0 0.25rem 0.6rem rgba(0, 0, 0, 0.06);
+        }
+
+        .question-card {
+            padding: 1rem;
+            min-height: 320px;
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 220ms ease, transform 220ms ease;
+        }
+
+        .question-card.transitioning {
+            opacity: 0;
+            transform: translateY(8px);
+        }
+
+        .question-text {
+            margin: 0 0 0.95rem;
+            font-size: clamp(1.02rem, 2.2vw, 1.2rem);
+            line-height: 1.36;
+            font-family: "Merriweather", Georgia, "Times New Roman", serif;
+        }
+
+        .choices {
+            display: grid;
+            gap: 0.52rem;
+        }
+
+        .choice-btn {
+            text-align: left;
+            border: 1px solid var(--line);
+            background: #f8f9fa;
+            color: var(--ink);
+            border-radius: 10px;
+            padding: 0.7rem 0.78rem;
+            font: inherit;
+            cursor: pointer;
+            transition: background 0.12s ease, border-color 0.12s ease;
+        }
+
+        .choice-btn:hover:not(:disabled) {
+            background: #eef2f6;
+        }
+
+        .choice-btn.correct {
+            background: #d1e7dd;
+            border-color: #badbcc;
+        }
+
+        .choice-btn.incorrect {
+            background: #f8d7da;
+            border-color: #f5c2c7;
+        }
+
+        .feedback {
+            min-height: 1.2rem;
+            margin: 0.8rem 0 0;
+            font-weight: 700;
+        }
+
+        .feedback.good {
+            color: var(--ok);
+        }
+
+        .feedback.bad {
+            color: var(--bad);
+        }
+
+        .actions {
+            margin-top: 0.85rem;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .next-btn,
+        .restart-btn,
+        .save-btn {
+            border: 0;
+            border-radius: 999px;
+            padding: 0.55rem 1rem;
+            font: inherit;
+            font-weight: 700;
+            color: #ffffff;
+            background: var(--primary);
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .next-btn:hover:not(:disabled),
+        .restart-btn:hover,
+        .save-btn:hover:not(:disabled) {
+            background: var(--primary-hover);
+        }
+
+        .next-btn:disabled,
+        .save-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .result {
+            display: none;
+            margin-top: 0.9rem;
+            padding: 1.2rem;
+            text-align: center;
+            animation: fadeInUp 260ms ease;
+        }
+
+        .result h2 {
+            margin: 0 0 0.3rem;
+            font-size: 1.4rem;
+        }
+
+        .result p {
+            margin: 0.35rem 0;
+            color: var(--muted);
+        }
+
+        .final-score {
+            margin: 0.4rem 0;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--ink);
+        }
+
+        .save-row {
+            margin: 0.8rem auto 0.3rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.45rem;
+            max-width: 500px;
+        }
+
+        .save-row input {
+            flex: 1 1 220px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 0.55rem 0.8rem;
+            font: inherit;
+        }
+
+        .save-message {
+            min-height: 1.2rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .save-message.ok {
+            color: var(--ok);
+        }
+
+        .save-message.bad {
+            color: var(--bad);
+        }
+
+        .leaderboard-card {
+            margin-top: 0.9rem;
+            padding: 1rem;
+        }
+
+        .leaderboard-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 0.55rem;
+            gap: 0.6rem;
+        }
+
+        .leaderboard-head h3 {
+            margin: 0;
+            font-size: 1.02rem;
+        }
+
+        .leaderboard-head p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        .leaderboard-list {
+            margin: 0;
+            padding-left: 1.2rem;
+            display: grid;
+            gap: 0.4rem;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.75rem;
+            border-bottom: 1px dashed #e5e7eb;
+            padding-bottom: 0.22rem;
+            font-size: 0.95rem;
+        }
+
+        .leaderboard-item:last-child {
+            border-bottom: 0;
+        }
+
+        .lb-score {
+            font-weight: 800;
+            color: #1e293b;
+            white-space: nowrap;
+        }
+
+        .leaderboard-empty {
+            margin: 0;
+            color: var(--muted);
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 700px) {
+            .content {
+                padding: 0.8rem;
+            }
+
+            .question-card {
+                min-height: 355px;
+            }
+
+            .topbar {
+                padding: 0.82rem 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="game-shell" aria-label="Movie trivia game">
+        <header class="topbar">
+            <h1>Movie Trivia Challenge</h1>
+            <a class="home-link" href="index.html">Back Home</a>
+        </header>
+
+        <div class="content">
+            <div class="meta">
+                <div class="pill-row">
+                    <span id="progressText" class="pill">Question 1 of 15</span>
+                    <span id="categoryPill" class="pill">Category: Action</span>
+                    <span id="difficultyPill" class="pill">Difficulty: Easy</span>
+                </div>
+                <div class="pill timer">Time: <span id="timeLeft">20</span>s</div>
+            </div>
+
+            <div class="progress-wrap">
+                <div class="progress-track">
+                    <div id="progressFill" class="progress-fill"></div>
+                </div>
+            </div>
+
+            <article id="questionCard" class="question-card">
+                <h2 id="questionText" class="question-text"></h2>
+                <div id="choices" class="choices"></div>
+                <p id="feedback" class="feedback" aria-live="polite"></p>
+                <div class="actions">
+                    <button id="nextBtn" class="next-btn" type="button" disabled>Next Question</button>
+                </div>
+            </article>
+
+            <section id="result" class="result">
+                <h2>Game Complete</h2>
+                <p>You finished the movie trivia challenge.</p>
+                <p class="final-score" id="scoreLine"></p>
+                <p id="scoreMessage"></p>
+                <div class="save-row">
+                    <input id="playerNameInput" type="text" maxlength="24" placeholder="Enter your name for the leaderboard">
+                    <button id="saveScoreBtn" class="save-btn" type="button">Save Score</button>
+                </div>
+                <p id="saveMessage" class="save-message" aria-live="polite"></p>
+                <button id="restartBtn" class="restart-btn" type="button">Play Again</button>
+            </section>
+
+            <section class="leaderboard-card" aria-label="Leaderboard">
+                <div class="leaderboard-head">
+                    <h3>Leaderboard</h3>
+                    <p>Top 10 scores on this device</p>
+                </div>
+                <ol id="leaderboardList" class="leaderboard-list"></ol>
+                <p id="leaderboardEmpty" class="leaderboard-empty">No scores yet. Finish a round and save your score.</p>
+            </section>
+        </div>
+    </section>
+
+    <script>
+        // Core questions plus 100 additional questions for random rounds.
+        const QUESTIONS_PER_GAME = 15;
+        const coreQuestions = [
+            { category: "Sci-Fi", difficulty: "Easy", question: "In The Matrix (1999), what color pill does Neo take?", choices: ["Blue", "Red", "Green", "Yellow"], correctIndex: 1 },
+            { category: "Animation", difficulty: "Easy", question: "In Toy Story, what is the name of Andy's cowboy doll?", choices: ["Jessie", "Buzz", "Woody", "Bullseye"], correctIndex: 2 },
+            { category: "Classics", difficulty: "Medium", question: "Who directed Jaws (1975)?", choices: ["Martin Scorsese", "George Lucas", "Steven Spielberg", "Francis Ford Coppola"], correctIndex: 2 },
+            { category: "Action", difficulty: "Easy", question: "In Avengers: Endgame, who says 'I am Iron Man'?", choices: ["Steve Rogers", "Thor", "Tony Stark", "Bruce Banner"], correctIndex: 2 },
+            { category: "Fantasy", difficulty: "Medium", question: "In Harry Potter, what house is Luna Lovegood in?", choices: ["Gryffindor", "Ravenclaw", "Hufflepuff", "Slytherin"], correctIndex: 1 },
+            { category: "Thriller", difficulty: "Hard", question: "In Inception, what object is Cobb's totem?", choices: ["A loaded die", "A spinning top", "A coin", "A chess knight"], correctIndex: 1 },
+            { category: "Adventure", difficulty: "Easy", question: "What is the name of the kingdom in Frozen?", choices: ["Arendelle", "Narnia", "Westeros", "Zamunda"], correctIndex: 0 },
+            { category: "Drama", difficulty: "Medium", question: "In Forrest Gump, what company does Forrest invest in?", choices: ["Microsoft", "IBM", "Apple", "AT&T"], correctIndex: 2 },
+            { category: "Superhero", difficulty: "Medium", question: "In The Dark Knight, who plays the Joker?", choices: ["Joaquin Phoenix", "Heath Ledger", "Jared Leto", "Tom Hardy"], correctIndex: 1 },
+            { category: "Comedy", difficulty: "Easy", question: "In Home Alone, what is the first name of the main character?", choices: ["Kevin", "Harry", "Marv", "Peter"], correctIndex: 0 },
+            { category: "Sci-Fi", difficulty: "Hard", question: "In Interstellar, what is the name of the robot with adjustable humor settings?", choices: ["KIPP", "TARS", "HAL", "R2-D2"], correctIndex: 1 },
+            { category: "Crime", difficulty: "Hard", question: "In The Godfather, who says 'I'm gonna make him an offer he can't refuse'?", choices: ["Michael Corleone", "Tom Hagen", "Vito Corleone", "Sonny Corleone"], correctIndex: 2 },
+            { category: "Adventure", difficulty: "Medium", question: "In Jurassic Park, what type of dinosaur is shown on the park's logo?", choices: ["Velociraptor", "Tyrannosaurus rex", "Triceratops", "Brachiosaurus"], correctIndex: 1 },
+            { category: "Animation", difficulty: "Medium", question: "In Finding Nemo, what kind of fish is Dory?", choices: ["Clownfish", "Blue tang", "Goldfish", "Angelfish"], correctIndex: 1 },
+            { category: "Classics", difficulty: "Hard", question: "In Casablanca, what song does Sam famously play?", choices: ["As Time Goes By", "Blue Moon", "Moon River", "Over the Rainbow"], correctIndex: 0 }
+        ];
+        const additionalQuestions = [
+            { category: "Drama", difficulty: "Easy", question: "Who directed Titanic (1997)?", choices: ["James Cameron", "Ridley Scott", "Peter Jackson", "David Fincher"], correctIndex: 0 },
+            { category: "Action", difficulty: "Easy", question: "Who plays Maximus in Gladiator?", choices: ["Russell Crowe", "Joaquin Phoenix", "Hugh Jackman", "Gerard Butler"], correctIndex: 0 },
+            { category: "Superhero", difficulty: "Easy", question: "Batman primarily protects which city?", choices: ["Metropolis", "Star City", "Gotham", "Central City"], correctIndex: 2 },
+            { category: "Sci-Fi", difficulty: "Easy", question: "Which franchise is known for the line 'May the Force be with you'?", choices: ["Star Trek", "Star Wars", "Dune", "Avatar"], correctIndex: 1 },
+            { category: "Animation", difficulty: "Easy", question: "What is Nemo's father's name in Finding Nemo?", choices: ["Gill", "Marlin", "Bruce", "Bloat"], correctIndex: 1 },
+            { category: "Superhero", difficulty: "Easy", question: "What is the fictional African nation in Black Panther?", choices: ["Genosha", "Latveria", "Wakanda", "Zamunda"], correctIndex: 2 },
+            { category: "Animation", difficulty: "Easy", question: "What is the rat's name in Ratatouille?", choices: ["Remy", "Emile", "Linguini", "Gusteau"], correctIndex: 0 },
+            { category: "Fantasy", difficulty: "Easy", question: "Who wrote The Hobbit?", choices: ["C.S. Lewis", "J.R.R. Tolkien", "George R.R. Martin", "J.K. Rowling"], correctIndex: 1 },
+            { category: "Adventure", difficulty: "Medium", question: "Who founded Jurassic Park in the film?", choices: ["Alan Grant", "John Hammond", "Ian Malcolm", "Lewis Dodgson"], correctIndex: 1 },
+            { category: "Comedy", difficulty: "Easy", question: "What is the Ghostbusters' iconic vehicle called?", choices: ["Ecto-1", "Mystery Machine", "Batmobile", "Interceptor"], correctIndex: 0 },
+            { category: "Animation", difficulty: "Easy", question: "What is the name of the young Wilderness Explorer in Up?", choices: ["Carl", "Dug", "Russell", "Kevin"], correctIndex: 2 },
+            { category: "Animation", difficulty: "Easy", question: "In Coco, where does much of the story take place?", choices: ["Neverland", "Land of the Dead", "Olympus", "Narnia"], correctIndex: 1 },
+            { category: "Animation", difficulty: "Easy", question: "Who voices Donkey in Shrek?", choices: ["Chris Rock", "Mike Myers", "Eddie Murphy", "Will Smith"], correctIndex: 2 },
+            { category: "Sci-Fi", difficulty: "Easy", question: "What is the moon called in Avatar (2009)?", choices: ["Pandora", "Titan", "Europa", "Endor"], correctIndex: 0 },
+            { category: "Action", difficulty: "Easy", question: "Who is the main protagonist in Mission: Impossible films?", choices: ["Jason Bourne", "Ethan Hunt", "James Bond", "John Wick"], correctIndex: 1 },
+            { category: "Action", difficulty: "Easy", question: "What building is central to Die Hard?", choices: ["Wayne Tower", "Nakatomi Plaza", "Stark Tower", "Empire State Building"], correctIndex: 1 },
+            { category: "Drama", difficulty: "Easy", question: "Rocky Balboa is strongly associated with which U.S. city?", choices: ["Boston", "Chicago", "Philadelphia", "Miami"], correctIndex: 2 },
+            { category: "Animation", difficulty: "Easy", question: "Who is Simba's father in The Lion King?", choices: ["Scar", "Mufasa", "Rafiki", "Zazu"], correctIndex: 1 },
+            { category: "Animation", difficulty: "Easy", question: "What is the name of the princess in Aladdin?", choices: ["Aurora", "Jasmine", "Ariel", "Tiana"], correctIndex: 1 },
+            { category: "Animation", difficulty: "Easy", question: "Which demigod accompanies Moana?", choices: ["Hercules", "Maui", "Poseidon", "Hades"], correctIndex: 1 },
+            { category: "Animation", difficulty: "Easy", question: "Which Frozen character has ice powers?", choices: ["Anna", "Elsa", "Olaf", "Kristoff"], correctIndex: 1 },
+            { category: "Adventure", difficulty: "Easy", question: "Who is the protagonist of The Hunger Games?", choices: ["Katniss Everdeen", "Tris Prior", "Hermione Granger", "Clary Fray"], correctIndex: 0 },
+            { category: "Sci-Fi", difficulty: "Easy", question: "What car is used for time travel in Back to the Future?", choices: ["Mustang", "Camaro", "DeLorean", "Corvette"], correctIndex: 2 },
+            { category: "Superhero", difficulty: "Easy", question: "What is Spider-Man's real name?", choices: ["Peter Parker", "Miles Morales", "Bruce Wayne", "Clark Kent"], correctIndex: 0 },
+            { category: "Adventure", difficulty: "Easy", question: "What is Indiana Jones' signature weapon?", choices: ["Lasso", "Whip", "Sword", "Bow"], correctIndex: 1 },
+            { category: "Adventure", difficulty: "Easy", question: "Who is the captain in Pirates of the Caribbean?", choices: ["Will Turner", "Hector Barbossa", "Jack Sparrow", "Davy Jones"], correctIndex: 2 },
+            { category: "Sci-Fi", difficulty: "Medium", question: "What is the name of Morpheus' ship in The Matrix?", choices: ["Serenity", "Nebuchadnezzar", "Galactica", "Rocinante"], correctIndex: 1 },
+            { category: "Sci-Fi", difficulty: "Easy", question: "Which movie features the line 'I'll be back'?", choices: ["RoboCop", "Predator", "The Terminator", "Total Recall"], correctIndex: 2 },
+            { category: "Horror", difficulty: "Easy", question: "What is the alien species called in Alien?", choices: ["Predator", "Xenomorph", "Martian", "Wraith"], correctIndex: 1 },
+            { category: "Thriller", difficulty: "Hard", question: "What is Hannibal Lecter's profession in The Silence of the Lambs?", choices: ["Lawyer", "Psychiatrist", "Detective", "Chef"], correctIndex: 1 },
+            { category: "Drama", difficulty: "Medium", question: "What is the nickname of Andy's friend in The Shawshank Redemption?", choices: ["Blue", "Red", "Doc", "Ace"], correctIndex: 1 },
+            { category: "Crime", difficulty: "Easy", question: "The Godfather films center on which family?", choices: ["Soprano", "Corleone", "Tattaglia", "Barzini"], correctIndex: 1 },
+            { category: "Animation", difficulty: "Easy", question: "Who is the space ranger toy in Toy Story?", choices: ["Woody", "Slinky", "Rex", "Buzz Lightyear"], correctIndex: 3 },
+            { category: "Animation", difficulty: "Easy", question: "Who is the one-eyed monster in Monsters, Inc.?", choices: ["Sulley", "Mike Wazowski", "Randall", "Boo"], correctIndex: 1 },
+            { category: "Animation", difficulty: "Easy", question: "Who is the supervillain in Despicable Me?", choices: ["Vector", "Gru", "Balthazar", "Dru"], correctIndex: 1 },
+            { category: "Animation", difficulty: "Easy", question: "What is the name of the baby in The Incredibles?", choices: ["Dash", "Jack-Jack", "Violet", "Syndrome"], correctIndex: 1 },
+            { category: "Animation", difficulty: "Easy", question: "What race car is the main character in Cars?", choices: ["Doc Hudson", "Mater", "Lightning McQueen", "Chick Hicks"], correctIndex: 2 },
+            { category: "Animation", difficulty: "Easy", question: "What is the name of WALL-E's robot companion?", choices: ["EVE", "AUTO", "MO", "HAL"], correctIndex: 0 },
+            { category: "Animation", difficulty: "Easy", question: "Who is the princess in Brave?", choices: ["Moana", "Elsa", "Merida", "Rapunzel"], correctIndex: 2 },
+            { category: "Animation", difficulty: "Easy", question: "What is Judy Hopps' profession in Zootopia?", choices: ["Teacher", "Chef", "Police officer", "Journalist"], correctIndex: 2 },
+            { category: "Superhero", difficulty: "Medium", question: "Who plays Doctor Strange in the MCU?", choices: ["Tom Hiddleston", "Benedict Cumberbatch", "Paul Rudd", "Chris Evans"], correctIndex: 1 },
+            { category: "Superhero", difficulty: "Easy", question: "Which film launched the MCU in 2008?", choices: ["The Incredible Hulk", "Iron Man", "Thor", "Captain America"], correctIndex: 1 },
+            { category: "Superhero", difficulty: "Easy", question: "What is Thor's hammer called?", choices: ["Stormbreaker", "Gungnir", "Mjolnir", "Excalibur"], correctIndex: 2 },
+            { category: "Superhero", difficulty: "Medium", question: "Captain America's shield is primarily made of what?", choices: ["Adamantium", "Vibranium", "Titanium", "Steel"], correctIndex: 1 },
+            { category: "Superhero", difficulty: "Easy", question: "Who recruits the Avengers in the MCU?", choices: ["Nick Fury", "Phil Coulson", "Maria Hill", "Tony Stark"], correctIndex: 0 },
+            { category: "Sci-Fi", difficulty: "Easy", question: "What is the Child's name in The Mandalorian?", choices: ["Yoda", "Grogu", "Babu", "Din"], correctIndex: 1 },
+            { category: "Sci-Fi", difficulty: "Medium", question: "What is the name of Cassian's droid in Rogue One?", choices: ["BB-8", "K-2SO", "C-3PO", "IG-11"], correctIndex: 1 },
+            { category: "Fantasy", difficulty: "Medium", question: "What is the elven refuge called in The Lord of the Rings?", choices: ["Mordor", "Rohan", "Rivendell", "Gondor"], correctIndex: 2 },
+            { category: "Fantasy", difficulty: "Easy", question: "What is the wizarding school in Harry Potter?", choices: ["Beauxbatons", "Durmstrang", "Ilvermorny", "Hogwarts"], correctIndex: 3 },
+            { category: "Fantasy", difficulty: "Easy", question: "What is Harry Potter's owl named?", choices: ["Crookshanks", "Hedwig", "Scabbers", "Fawkes"], correctIndex: 1 },
+            { category: "Fantasy", difficulty: "Medium", question: "Who is the escaped prisoner in Harry Potter and the Prisoner of Azkaban?", choices: ["Lucius Malfoy", "Sirius Black", "Peter Pettigrew", "Remus Lupin"], correctIndex: 1 },
+            { category: "Fantasy", difficulty: "Medium", question: "Who wrote Fantastic Beasts and Where to Find Them (in-universe)?", choices: ["Albus Dumbledore", "Gellert Grindelwald", "Newt Scamander", "Bathilda Bagshot"], correctIndex: 2 },
+            { category: "Romance", difficulty: "Easy", question: "Who is the vampire love interest in Twilight?", choices: ["Jacob Black", "Edward Cullen", "Carlisle Cullen", "Jasper Hale"], correctIndex: 1 },
+            { category: "Comedy", difficulty: "Medium", question: "In Mean Girls, what date is celebrated as 'Mean Girls Day'?", choices: ["October 3rd", "October 31st", "September 1st", "November 5th"], correctIndex: 0 },
+            { category: "Comedy", difficulty: "Easy", question: "What is Elle Woods' dog's name in Legally Blonde?", choices: ["Bruiser", "Buddy", "Baxter", "Bingo"], correctIndex: 0 },
+            { category: "Drama", difficulty: "Easy", question: "Who is the demanding editor in The Devil Wears Prada?", choices: ["Emily Charlton", "Andrea Sachs", "Nigel", "Miranda Priestly"], correctIndex: 3 },
+            { category: "Musical", difficulty: "Medium", question: "Mamma Mia! is set on which type of location?", choices: ["Italian city", "Greek island", "French village", "Spanish coast"], correctIndex: 1 },
+            { category: "Musical", difficulty: "Medium", question: "What is the family's surname in The Sound of Music?", choices: ["Von Trapp", "Von Braun", "Von Richthofen", "Von Berg"], correctIndex: 0 },
+            { category: "Action", difficulty: "Easy", question: "What is Pete Mitchell's call sign in Top Gun?", choices: ["Goose", "Iceman", "Maverick", "Rooster"], correctIndex: 2 },
+            { category: "Action", difficulty: "Easy", question: "What is the title of the Top Gun sequel?", choices: ["Top Gun: Legacy", "Top Gun: Maverick", "Top Gun Returns", "Top Gun 2"], correctIndex: 1 },
+            { category: "Sci-Fi", difficulty: "Medium", question: "What nickname does Cooper use for his daughter in Interstellar?", choices: ["Murph", "Maggie", "Maya", "Molly"], correctIndex: 0 },
+            { category: "Sci-Fi", difficulty: "Easy", question: "What desert planet is central in Dune?", choices: ["Tatooine", "Arrakis", "Krypton", "Vulcan"], correctIndex: 1 },
+            { category: "Action", difficulty: "Medium", question: "Who is the fierce road warrior in Mad Max: Fury Road?", choices: ["Immortan Joe", "Nux", "Furiosa", "Toast"], correctIndex: 2 },
+            { category: "Action", difficulty: "Easy", question: "Who plays John Wick?", choices: ["Tom Cruise", "Keanu Reeves", "Jason Statham", "Liam Neeson"], correctIndex: 1 },
+            { category: "Action", difficulty: "Easy", question: "What is Dom's surname in Fast & Furious?", choices: ["Toretto", "Walker", "Roman", "Shaw"], correctIndex: 0 },
+            { category: "Thriller", difficulty: "Medium", question: "Who directed The Prestige?", choices: ["Denis Villeneuve", "Christopher Nolan", "Sam Mendes", "Danny Boyle"], correctIndex: 1 },
+            { category: "Drama", difficulty: "Easy", question: "Who plays J. Robert Oppenheimer in Oppenheimer?", choices: ["Cillian Murphy", "Matt Damon", "Robert Downey Jr.", "Gary Oldman"], correctIndex: 0 },
+            { category: "Comedy", difficulty: "Easy", question: "Who stars as Barbie in Barbie (2023)?", choices: ["Emma Stone", "Margot Robbie", "Anya Taylor-Joy", "Florence Pugh"], correctIndex: 1 },
+            { category: "Thriller", difficulty: "Easy", question: "Joker (2019) is set primarily in what city?", choices: ["Metropolis", "Central City", "Gotham", "Bludhaven"], correctIndex: 2 },
+            { category: "Mystery", difficulty: "Medium", question: "Who is the detective in Knives Out?", choices: ["Hercule Poirot", "Benoit Blanc", "Sherlock Holmes", "Philip Marlowe"], correctIndex: 1 },
+            { category: "Mystery", difficulty: "Medium", question: "Glass Onion features which detective returning?", choices: ["Benoit Blanc", "Jake Gittes", "Detective Mills", "Nancy Drew"], correctIndex: 0 },
+            { category: "Horror", difficulty: "Easy", question: "What is the masked killer called in Scream?", choices: ["Leatherface", "Ghostface", "Pennywise", "Michael Myers"], correctIndex: 1 },
+            { category: "Horror", difficulty: "Easy", question: "Who is the killer in Halloween films?", choices: ["Jason Voorhees", "Freddy Krueger", "Michael Myers", "Chucky"], correctIndex: 2 },
+            { category: "Horror", difficulty: "Medium", question: "The Conjuring films focus on which paranormal investigators?", choices: ["The Warrens", "The Winchesters", "The Bradys", "The Polks"], correctIndex: 0 },
+            { category: "Horror", difficulty: "Easy", question: "What is the clown's name in It?", choices: ["Art", "Pennywise", "Bozo", "Skars"], correctIndex: 1 },
+            { category: "Horror", difficulty: "Medium", question: "What is the first name of the possessed girl in The Exorcist?", choices: ["Regan", "Carrie", "Megan", "Erin"], correctIndex: 0 },
+            { category: "Drama", difficulty: "Medium", question: "Parasite won Best Picture and was produced in which country?", choices: ["Japan", "South Korea", "China", "Thailand"], correctIndex: 1 },
+            { category: "Animation", difficulty: "Medium", question: "Spirited Away was produced by which studio?", choices: ["Pixar", "DreamWorks", "Studio Ghibli", "Laika"], correctIndex: 2 },
+            { category: "Animation", difficulty: "Easy", question: "What forest creature is in My Neighbor Totoro's title?", choices: ["Totoro", "Kodama", "No-Face", "Calcifer"], correctIndex: 0 },
+            { category: "Adventure", difficulty: "Medium", question: "In The Princess Bride, who says 'As you wish'?", choices: ["Inigo", "Westley", "Humperdinck", "Fezzik"], correctIndex: 1 },
+            { category: "Romance", difficulty: "Easy", question: "What is the female lead's name in The Notebook?", choices: ["Ellie", "Allie", "Annie", "Ava"], correctIndex: 1 },
+            { category: "Classics", difficulty: "Medium", question: "Casablanca is set in which city?", choices: ["Cairo", "Tangier", "Casablanca", "Algiers"], correctIndex: 2 },
+            { category: "Classics", difficulty: "Hard", question: "What is the name of the sled in Citizen Kane?", choices: ["Rosebud", "Snowfall", "Winter", "Redbird"], correctIndex: 0 },
+            { category: "Thriller", difficulty: "Medium", question: "What motel is central in Psycho?", choices: ["Bates Motel", "Overlook Hotel", "Derry Inn", "Hill House"], correctIndex: 0 },
+            { category: "Classics", difficulty: "Medium", question: "Who directed Rear Window?", choices: ["Billy Wilder", "Alfred Hitchcock", "Orson Welles", "John Ford"], correctIndex: 1 },
+            { category: "Sci-Fi", difficulty: "Medium", question: "What is the AI computer called in 2001: A Space Odyssey?", choices: ["Skynet", "Mother", "HAL 9000", "Jarvis"], correctIndex: 2 },
+            { category: "Sci-Fi", difficulty: "Hard", question: "In Blade Runner, what term is used for bioengineered humans?", choices: ["Replicants", "Synths", "Clones", "Cylons"], correctIndex: 0 },
+            { category: "Comedy", difficulty: "Easy", question: "Who stars in The Truman Show?", choices: ["Jim Carrey", "Tom Hanks", "Robin Williams", "Ben Stiller"], correctIndex: 0 },
+            { category: "Comedy", difficulty: "Medium", question: "In Groundhog Day, in which town is Phil stuck reliving the day?", choices: ["Punxsutawney", "Scranton", "Albany", "Pittsburgh"], correctIndex: 0 },
+            { category: "Comedy", difficulty: "Medium", question: "What nickname is used for Jeffrey Lebowski in The Big Lebowski?", choices: ["The Boss", "The Duke", "The Dude", "The Chief"], correctIndex: 2 },
+            { category: "Thriller", difficulty: "Hard", question: "Who is the main villain in No Country for Old Men?", choices: ["Llewelyn Moss", "Anton Chigurh", "Ed Tom Bell", "Carson Wells"], correctIndex: 1 },
+            { category: "Drama", difficulty: "Medium", question: "What instrument is central in Whiplash?", choices: ["Violin", "Piano", "Saxophone", "Drums"], correctIndex: 3 },
+            { category: "Drama", difficulty: "Medium", question: "Who stars as Nina in Black Swan?", choices: ["Emma Stone", "Natalie Portman", "Mila Kunis", "Anne Hathaway"], correctIndex: 1 },
+            { category: "Drama", difficulty: "Easy", question: "The Social Network is based on the creation of which company?", choices: ["Twitter", "Google", "Facebook", "Snapchat"], correctIndex: 2 },
+            { category: "Drama", difficulty: "Easy", question: "Who plays Jordan Belfort in The Wolf of Wall Street?", choices: ["Brad Pitt", "Leonardo DiCaprio", "Matt Damon", "Christian Bale"], correctIndex: 1 },
+            { category: "Crime", difficulty: "Easy", question: "Who leads the crew in Ocean's Eleven?", choices: ["Rusty Ryan", "Danny Ocean", "Linus Caldwell", "Terry Benedict"], correctIndex: 1 },
+            { category: "Action", difficulty: "Medium", question: "What does IMF stand for in Mission: Impossible?", choices: ["International Mission Force", "Impossible Missions Force", "Impossible Mission Force", "International Military Force"], correctIndex: 2 },
+            { category: "Action", difficulty: "Easy", question: "Who plays James Bond in Skyfall?", choices: ["Pierce Brosnan", "Daniel Craig", "Sean Connery", "Roger Moore"], correctIndex: 1 },
+            { category: "Action", difficulty: "Easy", question: "What is James Bond's agent number?", choices: ["006", "009", "007", "001"], correctIndex: 2 }
+        ];
+
+        const questionBank = [...coreQuestions, ...additionalQuestions];
+
+        const questionText = document.getElementById("questionText");
+        const choicesEl = document.getElementById("choices");
+        const feedbackEl = document.getElementById("feedback");
+        const nextBtn = document.getElementById("nextBtn");
+        const progressText = document.getElementById("progressText");
+        const progressFill = document.getElementById("progressFill");
+        const categoryPill = document.getElementById("categoryPill");
+        const difficultyPill = document.getElementById("difficultyPill");
+        const timeLeftEl = document.getElementById("timeLeft");
+        const resultEl = document.getElementById("result");
+        const scoreLine = document.getElementById("scoreLine");
+        const scoreMessage = document.getElementById("scoreMessage");
+        const restartBtn = document.getElementById("restartBtn");
+        const questionCard = document.getElementById("questionCard");
+        const playerNameInput = document.getElementById("playerNameInput");
+        const saveScoreBtn = document.getElementById("saveScoreBtn");
+        const saveMessage = document.getElementById("saveMessage");
+        const leaderboardList = document.getElementById("leaderboardList");
+        const leaderboardEmpty = document.getElementById("leaderboardEmpty");
+
+        let currentIndex = 0;
+        let score = 0;
+        let answered = false;
+        let timerId = null;
+        let timeLeft = 20;
+        let scoreSaved = false;
+        let activeQuestions = [];
+
+        const LEADERBOARD_KEY = "movie_trivia_leaderboard_v1";
+
+        // Tiny WebAudio beeps for correct/incorrect responses.
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playTone(frequency, durationMs, type = "sine", volume = 0.04) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.value = frequency;
+            gain.gain.value = volume;
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + durationMs / 1000);
+        }
+
+        function playCorrectSound() {
+            playTone(720, 90, "triangle", 0.05);
+            setTimeout(() => playTone(980, 120, "triangle", 0.05), 90);
+        }
+
+        function playIncorrectSound() {
+            playTone(260, 140, "sawtooth", 0.04);
+            setTimeout(() => playTone(180, 170, "sawtooth", 0.04), 120);
+        }
+
+        function loadLeaderboard() {
+            try {
+                const raw = localStorage.getItem(LEADERBOARD_KEY);
+                const parsed = raw ? JSON.parse(raw) : [];
+                return Array.isArray(parsed) ? parsed : [];
+            } catch {
+                return [];
+            }
+        }
+
+        function saveLeaderboard(entries) {
+            localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(entries));
+        }
+
+        function renderLeaderboard() {
+            const entries = loadLeaderboard();
+            leaderboardList.innerHTML = "";
+
+            if (entries.length === 0) {
+                leaderboardEmpty.style.display = "block";
+                return;
+            }
+
+            leaderboardEmpty.style.display = "none";
+
+            entries.forEach((entry, i) => {
+                const item = document.createElement("li");
+                item.className = "leaderboard-item";
+                item.innerHTML = `
+                    <span>${i + 1}. ${entry.name}</span>
+                    <span class="lb-score">${entry.score}/${entry.total} (${entry.percent}%)</span>
+                `;
+                leaderboardList.appendChild(item);
+            });
+        }
+
+        function setProgress() {
+            progressText.textContent = `Question ${currentIndex + 1} of ${activeQuestions.length}`;
+            progressFill.style.width = `${(currentIndex / activeQuestions.length) * 100}%`;
+        }
+
+        function startTimer() {
+            clearInterval(timerId);
+            timeLeft = 20;
+            timeLeftEl.textContent = timeLeft;
+
+            timerId = setInterval(() => {
+                timeLeft -= 1;
+                timeLeftEl.textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerId);
+                    if (!answered) {
+                        lockQuestion(null, true);
+                    }
+                }
+            }, 1000);
+        }
+
+        function renderQuestion() {
+            const q = activeQuestions[currentIndex];
+            answered = false;
+            feedbackEl.textContent = "";
+            feedbackEl.className = "feedback";
+            nextBtn.disabled = true;
+
+            categoryPill.textContent = `Category: ${q.category}`;
+            difficultyPill.textContent = `Difficulty: ${q.difficulty}`;
+            questionText.textContent = q.question;
+            choicesEl.innerHTML = "";
+            setProgress();
+            startTimer();
+
+            q.choices.forEach((choice, idx) => {
+                const btn = document.createElement("button");
+                btn.className = "choice-btn";
+                btn.type = "button";
+                btn.textContent = `${String.fromCharCode(65 + idx)}. ${choice}`;
+                btn.addEventListener("click", () => lockQuestion(idx, false));
+                choicesEl.appendChild(btn);
+            });
+        }
+
+        function lockQuestion(selectedIndex, timedOut) {
+            if (answered) return;
+            answered = true;
+            clearInterval(timerId);
+
+            const q = activeQuestions[currentIndex];
+            const buttons = [...choicesEl.querySelectorAll(".choice-btn")];
+            const isCorrect = selectedIndex === q.correctIndex;
+
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                if (idx === q.correctIndex) btn.classList.add("correct");
+                if (!timedOut && idx === selectedIndex && idx !== q.correctIndex) btn.classList.add("incorrect");
+            });
+
+            if (timedOut) {
+                feedbackEl.textContent = "Time is up! The highlighted option is correct.";
+                feedbackEl.classList.add("bad");
+                playIncorrectSound();
+            } else if (isCorrect) {
+                score += 1;
+                feedbackEl.textContent = "Correct! Nice job.";
+                feedbackEl.classList.add("good");
+                playCorrectSound();
+            } else {
+                feedbackEl.textContent = "Not quite. The highlighted option is correct.";
+                feedbackEl.classList.add("bad");
+                playIncorrectSound();
+            }
+
+            nextBtn.disabled = false;
+        }
+
+        function showResults() {
+            clearInterval(timerId);
+            progressFill.style.width = "100%";
+            questionCard.style.display = "none";
+            resultEl.style.display = "block";
+            scoreSaved = false;
+            saveScoreBtn.disabled = false;
+            saveMessage.textContent = "";
+            saveMessage.className = "save-message";
+
+            const percent = Math.round((score / activeQuestions.length) * 100);
+            scoreLine.textContent = `${score} / ${activeQuestions.length} (${percent}%)`;
+
+            if (percent >= 85) {
+                scoreMessage.textContent = "Blockbuster-level performance.";
+            } else if (percent >= 65) {
+                scoreMessage.textContent = "Solid score. You know your movies.";
+            } else {
+                scoreMessage.textContent = "Good effort. Run it back and beat your score.";
+            }
+        }
+
+        function saveCurrentScore() {
+            if (scoreSaved) {
+                saveMessage.textContent = "Score already saved for this round.";
+                saveMessage.className = "save-message bad";
+                return;
+            }
+
+            const name = playerNameInput.value.trim();
+            if (!name) {
+                saveMessage.textContent = "Enter your name before saving.";
+                saveMessage.className = "save-message bad";
+                return;
+            }
+
+            const total = activeQuestions.length;
+            const percent = Math.round((score / total) * 100);
+            const entry = {
+                name,
+                score,
+                total,
+                percent,
+                ts: Date.now()
+            };
+
+            const updated = [...loadLeaderboard(), entry]
+                .sort((a, b) => {
+                    if (b.score !== a.score) return b.score - a.score;
+                    if (b.percent !== a.percent) return b.percent - a.percent;
+                    return a.ts - b.ts;
+                })
+                .slice(0, 10);
+
+            saveLeaderboard(updated);
+            renderLeaderboard();
+
+            scoreSaved = true;
+            saveScoreBtn.disabled = true;
+            saveMessage.textContent = "Score saved to leaderboard.";
+            saveMessage.className = "save-message ok";
+        }
+
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i -= 1) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function buildRoundQuestions() {
+            activeQuestions = shuffleArray([...questionBank]).slice(0, QUESTIONS_PER_GAME);
+        }
+
+        function goNext() {
+            questionCard.classList.add("transitioning");
+            setTimeout(() => {
+                currentIndex += 1;
+                if (currentIndex < activeQuestions.length) {
+                    renderQuestion();
+                    questionCard.classList.remove("transitioning");
+                } else {
+                    showResults();
+                }
+            }, 220);
+        }
+
+        function restartGame() {
+            currentIndex = 0;
+            score = 0;
+            resultEl.style.display = "none";
+            questionCard.style.display = "block";
+            questionCard.classList.remove("transitioning");
+            playerNameInput.value = "";
+            saveMessage.textContent = "";
+            saveMessage.className = "save-message";
+            saveScoreBtn.disabled = false;
+            buildRoundQuestions();
+            renderQuestion();
+        }
+
+        nextBtn.addEventListener("click", goNext);
+        restartBtn.addEventListener("click", restartGame);
+        saveScoreBtn.addEventListener("click", saveCurrentScore);
+
+        renderLeaderboard();
+        restartGame();
+    </script>
+</body>
+</html>

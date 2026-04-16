@@ -1,0 +1,238 @@
+:root {
+    --bg: #f6f7fb;
+    --card: #ffffff;
+    --text: #1f2937;
+    --muted: #4b5563;
+    --border: #e5e7eb;
+    --shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 4.25rem 1.25rem 2.25rem;
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: #131315;
+    background:#80a0d4
+}
+
+.top-right-nav {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    z-index: 9999;
+}
+
+.top-right-nav a {
+    display: inline-block;
+    text-decoration: none;
+    color: #1f2937;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: var(--shadow);
+}
+
+.top-right-nav a:hover {
+    background: #f3f4f6;
+}
+
+h1,
+h2 {
+    text-align: center;
+    margin: 0.75rem 0;
+    line-height: 1.2;
+}
+
+.top-intro-card,
+.top-list-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+}
+
+.top-title-card {
+    font-size: 2.4rem;
+}
+
+.top-intro-card {
+    margin: 0.35rem 0 0.65rem;
+    padding: 0.75rem 0.9rem;
+    color: var(--muted);
+    line-height: 1.35;
+}
+
+.top-list-card {
+    margin: 0.25rem 0 0.9rem;
+    padding: 0.65rem 0.8rem;
+}
+
+.top-list-card ol {
+    margin: 0;
+    padding-left: 1.2rem;
+}
+
+.top-list-card > ol > li {
+    font-weight: 700;
+}
+
+.top-list-card ul {
+    margin: 0.3rem 0 0.45rem;
+    padding-left: 1.1rem;
+}
+
+.top-list-card ul li {
+    font-weight: 400;
+}
+
+ol {
+    margin: 0;
+    padding-left: 1.45rem;
+}
+
+.movie-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 132px;
+    gap: 0.6rem;
+    margin-bottom: 0.55rem;
+    padding-right: 0.2rem;
+    line-height: 1.25;
+}
+
+.movie-text-card {
+    padding: 0.55rem 0.7rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+}
+
+.movie-text-card h3 {
+    margin: 0;
+    font-size: 1.02rem;
+    line-height: 1.2;
+}
+
+.movie-notes {
+    margin: 0.2rem 0 0;
+    padding-left: 1.1rem;
+}
+
+.movie-notes li {
+    margin: 0;
+    font-size: 0.93rem;
+    color: var(--muted);
+}
+
+.movie-poster-card {
+    width: 132px;
+    padding: 0.35rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    align-self: start;
+}
+
+.movie-poster-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 8px;
+}
+
+.embed-center {
+    display: flex;
+    justify-content: center;
+    margin: 0.4rem 0 1rem;
+}
+
+.tableauPlaceholder {
+    width: min(100%, 850px);
+}
+
+.youtube-embed {
+    display: block;
+    max-width: 100%;
+}
+
+.trailers-pyramid {
+    display: grid;
+    gap: 0.8rem;
+    margin: 0.4rem 0 1rem;
+}
+
+.trailers-row {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.trailer-frame {
+    width: 280px;
+    height: 158px;
+    border-radius: 10px;
+}
+
+.back-to-top {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    background: #ffffff;
+    color: #1f2937;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.45rem 0.75rem;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: var(--shadow);
+}
+
+.back-to-top:hover {
+    background: #f3f4f6;
+}
+
+@media (max-width: 700px) {
+    body {
+        padding-top: 5.9rem;
+    }
+
+    .top-right-nav {
+        right: 0.65rem;
+        left: 0.65rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .movie-item {
+        grid-template-columns: 1fr;
+    }
+
+    .movie-poster-card {
+        width: 140px;
+    }
+
+    .trailer-frame {
+        width: 100%;
+        max-width: 360px;
+        height: 202px;
+    }
+}
